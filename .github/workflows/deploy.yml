@@ -12,7 +12,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Build Docker Image
-      run: docker build -t tambekrish/yii2-app:latest ./yii2-app-basic
+      run: docker build -t tambekrish/yii2-app:latest ./yii2-app-basic .
 
     - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
