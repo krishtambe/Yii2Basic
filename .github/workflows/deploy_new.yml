@@ -1,0 +1,34 @@
+name: CI/CD for Yii2 App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: docker build -t tambekrish/yii2-app:latest .
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Push Docker Image
+        run: docker push tambekrish/yii2-app:latest
+
+      - name: SSH and Deploy on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull tambekrish/yii2-app:latest
+            docker service update --image tambekrish/yii2-app:latest yii2-app || \
+            docker service create --name yii2-app --publish published=8081,target=80 tambekrish/yii2-app:latest
