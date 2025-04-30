@@ -19,8 +19,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/yii2-app:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/yii2-app:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/yii2-basic:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/yii2-basic:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -29,5 +29,5 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/yii2-app:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/yii2-basic:latest
             docker service update --image ${{ secrets.DOCKER_USERNAME }}/yii2-app:latest yii2_service
